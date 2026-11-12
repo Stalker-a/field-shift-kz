@@ -24,7 +24,8 @@
 - [x] Правила севооборота, оценка, поиск лучших вариантов
 - [x] Интерфейс Streamlit (3 раздела)
 - [ ] Проверить параметры культур по источникам
-- [ ] Деплой (Streamlit Community Cloud, нужен GitHub-репозиторий)
+- [x] GitHub-репозиторий, команда приглашена
+- [ ] Деплой (Streamlit Community Cloud)
 - [ ] Презентация + демо-видео
 - [ ] Заполнить форму сдачи на сайте
 
@@ -37,6 +38,30 @@
 | Лидер | Данные + логика + сдача | `fieldshift/`, интеграция, проверка, финальная отправка формы |
 | Участник 2 | Интерфейс + деплой | `app.py`: выбор точки кликом по карте (опционально), внешний вид, деплой, GitHub |
 | Участник 3 | Агрономия + презентация | Проверить `fieldshift/crops.py` по источникам (FAO, казахстанские агро-источники), 2–3 цифры про КЗ для слайдов, сюжет, демо-видео |
+
+## Репозиторий и работа в git
+
+Репозиторий: https://github.com/Stalker-a/field-shift-kz. Приглашение пришло на почту, его нужно принять.
+
+```bash
+# один раз
+git clone https://github.com/Stalker-a/field-shift-kz.git
+cd field-shift-kz
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+
+# каждая задача — в своей ветке
+git checkout main && git pull
+git checkout -b ui            # ui / crops / logic / slides
+# ...работа...
+git add -A && git commit -m "Что сделал"
+git push -u origin ui
+# затем на GitHub: Compare & pull request → лидер проверяет и вливает в main
+```
+
+Правила: в `main` напрямую не пушим, перед началом работы делаем `git pull`, коммитим маленькими частями.
 
 ## План
 
