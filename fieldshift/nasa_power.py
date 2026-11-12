@@ -42,8 +42,11 @@ def fetch_raw(lat, lon, start=1981, end=2024, timeout=60):
     resp.raise_for_status()
     data = resp.json()
 
-    CACHE_DIR.mkdir(exist_ok=True)
-    path.write_text(json.dumps(data), encoding="utf-8")
+    try:
+        CACHE_DIR.mkdir(exist_ok=True)
+        path.write_text(json.dumps(data), encoding="utf-8")
+    except OSError:
+        pass  # read-only filesystem on a host: the cache is optional
     return data
 
 
