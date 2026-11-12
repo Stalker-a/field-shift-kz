@@ -6,6 +6,7 @@ from .crops import CROPS, IRRIGATION_MM
 
 ROTATION_YEARS = 4
 TEMP_MARGIN = 4.0          # °C outside the range at which suitability reaches 0
+SEASON_MARGIN = 30.0       # frost-free days short of the need at which suitability reaches 0
 MIN_SUITABILITY = 0.4      # crops below this are not used in recommendations
 MAX_CANDIDATES = 10        # best-suited crops searched (plus fallow)
 FALLOW_CARRYOVER = 0.4     # share of soil storage a fallow year adds for the next crop
@@ -33,13 +34,33 @@ def water_fit(crop, water):
     return ratio ** (1 - 0.7 * crop.drought_tol)
 
 
+def season_fit(crop, frost_free_days):
+    if frost_free_days >= crop.season_days:
+        return 1.0
+    return max(0.0, 1 - (crop.season_days - frost_free_days) / SEASON_MARGIN)
+
+
+def salt_fit(crop, soil):
+    return 0.4 + 0.6 * crop.salt_tol if soil.saline else 1.0
+
+
+def fit_breakdown(crop, climate, soil, irrigated, extra_water=0.0):
+    """Per-factor fits (0..1) whose product is the crop's suitability."""
+    water = available_water(climate, soil, irrigated) + extra_water
+    return {
+        "temperature": temp_fit(crop, climate["season_temp"]),
+        "water": water_fit(crop, water),
+        "season": season_fit(crop, climate["frost_free_days"]),
+        "salinity": salt_fit(crop, soil),
+    }
+
+
 def suitability(crop, climate, soil, irrigated, extra_water=0.0):
     if crop.irrigated_only and not irrigated:
         return 0.0
-    water = available_water(climate, soil, irrigated) + extra_water
-    s = temp_fit(crop, climate["season_temp"]) * water_fit(crop, water)
-    if soil.saline:
-        s *= 0.4 + 0.6 * crop.salt_tol
+    s = 1.0
+    for fit in fit_breakdown(crop, climate, soil, irrigated, extra_water).values():
+        s *= fit
     return s
 
 
@@ -59,12 +80,12 @@ def rule_issues(rot):
     for prev, nxt in _pairs(rot):
         a, b = CROPS[prev], CROPS[nxt]
         if prev == nxt:
-            issues.append((True, f"{a.name} after {b.name}: pests and diseases build up"))
+            issues.append((True, f"{b.name} after {a.name.lower()}: pests and diseases build up"))
         elif a.family == b.family == "cereal":
-            issues.append((False, f"{a.name} after {b.name}: cereal after cereal"))
+            issues.append((False, f"{b.name} after {a.name.lower()}: cereal after cereal"))
         elif a.family == b.family and a.family in ("legume", "oilseed"):
-            issues.append((True, f"{a.name} after {b.name}: same crop family twice"))
-    return issues
+            issues.append((True, f"{b.name} after {a.name.lower()}: same crop family twice"))
+    return list(dict.fromkeys(issues))  # a repeated pair is reported once
 
 
 @dataclass
@@ -77,7 +98,7 @@ class RotationResult:
 
 
 def _clamp(x):
-    return max(0.0, min(1.0, x))
+    return float(max(0.0, min(1.0, x)))
 
 
 def score_rotation(rot, now, future, soil, irrigated, weights):
@@ -106,7 +127,7 @@ def score_rotation(rot, now, future, soil, irrigated, weights):
         bonus = 1.15 if prev.family in ("legume", "fallow") else 1.0  # N credit / stored moisture
         profit_parts.append(crop.value * suit * (0.6 + 0.4 * soil.fertility) * bonus)
 
-    resilience = sum(suitability(c, future, soil, irrigated) for c in real) / len(real)
+    resilience = sum(suitability(c, future, soil, irrigated) for c in real) / len(real) if real else 0.0
 
     scores = {
         "soil": _clamp(soil_score),
@@ -116,12 +137,13 @@ def score_rotation(rot, now, future, soil, irrigated, weights):
     }
     w_sum = sum(weights.values()) or 1
     total = sum(scores[k] * weights[k] for k in CRITERIA) / w_sum
-    return RotationResult(tuple(rot), scores, total, rule_issues(rot))
+    return RotationResult(tuple(rot), scores, float(total), rule_issues(rot))
 
 
 def explain(result, now, future_year, soil, irrigated):
     crops = [CROPS[k] for k in result.rotation]
     water = available_water(now, soil, irrigated)
+    frost_free = now["frost_free_days"]
     reasons = []
     for c in crops:
         if c.family == "legume":
@@ -131,13 +153,18 @@ def explain(result, now, future_year, soil, irrigated):
     if len(families) >= 3:
         reasons.append(f"{len(families)} different crop families break pest and disease cycles.")
     if any(c.family == "fallow" for c in crops):
-        reasons.append("A green-manure / fallow year stores moisture and organic matter for the next crop.")
+        reasons.append("A green fallow year (green manure) stores moisture and organic matter for the next crop.")
     thirsty = [c.name for c in crops if c.water_need > water]
     if thirsty:
         verb = "needs" if len(thirsty) == 1 else "need"
         reasons.append(f"Water risk: {', '.join(thirsty)} {verb} more than the ~{water:.0f} mm available.")
     else:
         reasons.append(f"Every crop fits within the ~{water:.0f} mm of water available in the season.")
+    late = [c.name for c in crops if c.season_days > frost_free]
+    if late:
+        verb = "needs" if len(late) == 1 else "need"
+        reasons.append(f"Frost risk: {', '.join(late)} {verb} a longer season than the "
+                       f"~{frost_free:.0f} frost-free days here.")
     reasons.append(f"Stays {result.scores['resilience']:.0%} suitable under the {future_year} trend climate.")
     return reasons
 
