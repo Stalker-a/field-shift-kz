@@ -1,8 +1,9 @@
 """Crop and soil parameters.
 
-APPROXIMATE values for a hackathon prototype. They encode relative differences
-between crops (who needs more water, who fixes nitrogen), not exact agronomy.
-TODO(team): check each row against FAO / Kazakh agronomy sources and cite them.
+Prototype parameters, with evidence and unresolved limits in ../SOURCES.md.
+Selected water needs are nominal seasonal crop evapotranspiration (ETc), not
+irrigation application depths or minimum water needed to survive. Temperature
+bounds and relative scores remain uncalibrated prototype assumptions.
 """
 from dataclasses import dataclass
 
@@ -14,32 +15,36 @@ class Crop:
     family: str          # cereal, legume, oilseed, pseudocereal, row, fallow
     t_min: float         # suitable Apr–Sep mean temperature range, °C
     t_max: float
-    water_need: float    # seasonal water need, mm
+    water_need: float    # nominal seasonal crop ETc, mm; see SOURCES.md
     drought_tol: float   # 0..1
     soil_effect: float   # 0..1, contribution to soil health
     value: float         # 0..1, relative market value
-    salt_tol: float = 0.3
+    salt_tol: float = 0.3  # heuristic 0..1, not a measured salinity threshold
     season_days: int = 0  # frost-free days needed from sowing to harvest; 0 = no limit
     irrigated_only: bool = False
 
 
+# Six revised water needs use the lower end of FAO Manual 3, Table 14;
+# rice uses the upper end for the hot southern growing season. These choices
+# are model assumptions within published ranges, not Kazakhstan field estimates.
+# All keys and crop forms are retained; spring cereals/rapeseed are assumed.
 CROPS = {c.key: c for c in [
-    Crop("wheat", "Wheat", "cereal", 12, 22, 330, 0.5, 0.30, 0.60, 0.5, season_days=100),
-    Crop("barley", "Barley", "cereal", 11, 21, 290, 0.6, 0.30, 0.50, 0.7, season_days=90),
-    Crop("oats", "Oats", "cereal", 11, 18, 330, 0.4, 0.40, 0.40, 0.4, season_days=95),
+    Crop("wheat", "Wheat", "cereal", 12, 22, 450, 0.5, 0.30, 0.60, 0.5, season_days=100),
+    Crop("barley", "Barley", "cereal", 11, 21, 450, 0.6, 0.30, 0.50, 0.7, season_days=90),
+    Crop("oats", "Oats", "cereal", 11, 18, 450, 0.4, 0.40, 0.40, 0.4, season_days=95),
     Crop("millet", "Millet", "cereal", 17, 27, 250, 0.85, 0.40, 0.40, 0.5, season_days=90),
     Crop("maize", "Maize (grain)", "row", 18, 27, 500, 0.3, 0.20, 0.70, 0.3, season_days=130),
-    Crop("sunflower", "Sunflower", "oilseed", 15, 24, 400, 0.7, 0.10, 0.75, 0.5, season_days=120),
+    Crop("sunflower", "Sunflower", "oilseed", 15, 24, 600, 0.7, 0.10, 0.75, 0.5, season_days=120),
     Crop("rapeseed", "Rapeseed (canola)", "oilseed", 11, 18, 360, 0.4, 0.50, 0.70, 0.4, season_days=100),
     Crop("flax", "Flax (linseed)", "oilseed", 12, 19, 280, 0.5, 0.40, 0.65, 0.3, season_days=95),
-    Crop("peas", "Peas", "legume", 11, 19, 300, 0.4, 0.80, 0.55, 0.3, season_days=90),
+    Crop("peas", "Peas", "legume", 11, 19, 350, 0.4, 0.80, 0.55, 0.3, season_days=90),
     Crop("chickpea", "Chickpea", "legume", 15, 26, 250, 0.8, 0.70, 0.70, 0.4, season_days=100),
     Crop("lentil", "Lentil", "legume", 12, 22, 250, 0.7, 0.75, 0.65, 0.3, season_days=95),
     Crop("soybean", "Soybean", "legume", 18, 25, 450, 0.3, 0.75, 0.70, 0.3, season_days=125),
     Crop("buckwheat", "Buckwheat", "pseudocereal", 13, 20, 300, 0.4, 0.60, 0.50, 0.3, season_days=80),
-    Crop("alfalfa", "Alfalfa", "legume", 13, 27, 600, 0.6, 0.95, 0.50, 0.6),
+    Crop("alfalfa", "Alfalfa", "legume", 13, 27, 800, 0.6, 0.95, 0.50, 0.6),
     Crop("cotton", "Cotton", "row", 21, 30, 700, 0.4, 0.10, 0.80, 0.7, season_days=160, irrigated_only=True),
-    Crop("rice", "Rice", "cereal", 21, 30, 1100, 0.0, 0.20, 0.70, 0.6, season_days=130, irrigated_only=True),
+    Crop("rice", "Rice", "cereal", 21, 30, 700, 0.0, 0.20, 0.70, 0.6, season_days=130, irrigated_only=True),
     Crop("fallow", "Green fallow", "fallow", -50, 50, 0, 1.0, 0.80, 0.00, 1.0),
 ]}
 
@@ -59,7 +64,7 @@ class Soil:
     key: str
     name: str
     fertility: float     # 0..1
-    water_hold: float    # plant-available water the profile can store, mm
+    water_hold: float    # assumed profile storage, mm; depth unspecified (SOURCES.md)
     note: str = ""
     saline: bool = False
 
@@ -77,4 +82,4 @@ SOILS = {s.key: s for s in [
          "Salt holds back most crops. Common on old irrigated land.", saline=True),
 ]}
 
-IRRIGATION_MM = 450  # extra seasonal water when the field is irrigated
+IRRIGATION_MM = 450  # assumed net seasonal water available to plants, not gross delivery
