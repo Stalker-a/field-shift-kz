@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 import pandas as pd
 import streamlit as st
+from streamlit_folium import st_folium
 
 from fieldshift import charts
 from fieldshift import climate as cl
@@ -11,6 +12,7 @@ from fieldshift.dataset import load_point
 from fieldshift.nasa_power import PARAMETERS
 from fieldshift.regions import REGIONS
 from fieldshift.rotation import CRITERIA, fit_breakdown, recommend, score_rotation, suitability
+from ui_helpers import LAT_RANGE, LON_RANGE, field_map, field_summary, map_point
 
 FUTURE_YEAR = 2035
 CUSTOM = "Custom coordinates"
@@ -29,6 +31,57 @@ TABS = {"climate": ":material/thermostat: Climate shift", "crops": ":material/gr
         "rotation": ":material/autorenew: Rotation plan", "method": ":material/database: Data & method"}
 
 st.set_page_config(page_title="Field Shift KZ", page_icon="🌾", layout="wide")
+st.html("""<style>
+.stMainBlockContainer {max-width: 1480px; padding-top: 2rem;}
+.st-key-field_overview {background: linear-gradient(110deg, #16382b55, #26262444);}
+.st-key-field_overview p {margin-bottom: .35rem;}
+@media (max-width: 640px) {
+  .stMainBlockContainer {padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;}
+}
+</style>""")
+
+
+def select_point(point):
+    st.session_state["field_region"] = CUSTOM
+    st.session_state["chosen_point"] = point
+    st.session_state["custom_lat"], st.session_state["custom_lon"] = point
+
+
+def use_demo():
+    st.session_state["field_region"] = next(iter(REGIONS))
+
+
+def open_tab(key):
+    st.session_state["active_view"] = TABS[key]
+    st.query_params["tab"] = key
+
+
+def sync_tab():
+    selected = st.session_state["active_view"]
+    st.query_params["tab"] = next(key for key, label in TABS.items() if label == selected)
+
+
+@st.dialog("Choose your field on the map", width="large")
+def choose_field(lat, lon):
+    st.caption("Click a location, check its coordinates, then apply it to your field. "
+               "Panning and zooming do not load climate data.")
+    selection = st_folium(
+        field_map(REGIONS, lat, lon), height=380, use_container_width=True,
+        returned_objects=["last_clicked"], key=f"field_picker_{st.session_state['map_session']}",
+    )
+    clicked = selection.get("last_clicked") if selection else None
+    point = map_point(clicked)
+    if point:
+        st.success(f"Selected point: {point[0]:.2f}°N, {point[1]:.2f}°E")
+    elif clicked:
+        st.warning("Choose a point within the supported area: 40–56°N, 46–88°E.")
+    else:
+        st.info("Click the map to choose a point. The green ring marks your current field.")
+    st.caption("Map tiles need an internet connection. You can also enter coordinates in the sidebar.")
+    if st.button("Use selected point", type="primary", disabled=point is None,
+                 icon=":material/check:", width="stretch", on_click=select_point,
+                 args=(point,)):
+        st.rerun()
 
 
 @st.cache_data(show_spinner="Loading NASA POWER data…")
@@ -100,18 +153,34 @@ def shift_phrases(shift):
 
 # ---------- sidebar: inputs ----------
 with st.sidebar:
+    st.caption("FIELD SHIFT KZ · NASA POWER")
     st.subheader("1 · Your field")
     region = st.selectbox("Region", [*REGIONS, CUSTOM],
+                          key="field_region",
                           help="Pick the farming region closest to your field, or enter coordinates.")
     if region == CUSTOM:
-        c_lat, c_lon = st.columns(2)
-        lat = c_lat.number_input("Latitude, °N", 40.0, 56.0, 51.0, 0.01)
-        lon = c_lon.number_input("Longitude, °E", 46.0, 88.0, 71.0, 0.01)
+        st.session_state.setdefault("chosen_point", next(iter(REGIONS.values())))
+        st.session_state.setdefault("custom_lat", st.session_state["chosen_point"][0])
+        st.session_state.setdefault("custom_lon", st.session_state["chosen_point"][1])
+        with st.form("coordinates"):
+            c_lat, c_lon = st.columns(2)
+            entered_lat = c_lat.number_input("Latitude, °N", *LAT_RANGE,
+                                             step=0.01, format="%.2f", key="custom_lat")
+            entered_lon = c_lon.number_input("Longitude, °E", *LON_RANGE,
+                                             step=0.01, format="%.2f", key="custom_lon")
+            if st.form_submit_button("Apply coordinates", width="stretch"):
+                st.session_state["chosen_point"] = (entered_lat, entered_lon)
+        lat, lon = st.session_state["chosen_point"]
         place = f"Your field at {lat:.2f}°N, {lon:.2f}°E"
     else:
         lat, lon = REGIONS[region]
+        st.session_state["chosen_point"] = (lat, lon)
         place = region.split(" (")[0]
     chart(charts.region_map(REGIONS, lat, lon))
+    if st.button("Choose on map", icon=":material/map:", width="stretch"):
+        st.session_state["map_session"] = st.session_state.get("map_session", 0) + 1
+        choose_field(lat, lon)
+    st.caption("The 12 demo regions include climate data for offline use.")
 
     soil_key = st.selectbox("Soil type", list(SOILS), format_func=lambda k: SOILS[k].name)
     soil = SOILS[soil_key]
@@ -143,7 +212,12 @@ st.caption("See how your field's climate has changed since 1981 and which crop r
 try:
     monthly, yearly, shift = load_climate(lat, lon)
 except Exception as exc:  # network problems should not crash the demo
-    st.error(f"Could not load NASA POWER data: {exc}")
+    st.error("We couldn't load climate data for this point. Try again or open a demo region.")
+    retry, demo = st.columns(2)
+    retry.button("Try again", icon=":material/refresh:")
+    demo.button("Use Kostanay demo", on_click=use_demo, icon=":material/offline_bolt:")
+    with st.expander("Connection details"):
+        st.code(str(exc), language=None)
     st.stop()
 
 past, recent = shift["past_period"], shift["recent_period"]
@@ -153,6 +227,17 @@ future = cl.profile(shift, years_ahead=FUTURE_YEAR - sum(recent) / 2)
 baseline = score_rotation(current, now, future, soil, irrigated, weights)
 best = best_rotations(tuple(now.items()), tuple(future.items()), soil_key, irrigated,
                       tuple(weights.items()))
+
+with st.container(border=True, key="field_overview"):
+    field_info, settings = st.columns([3, 2], gap="medium")
+    with field_info:
+        st.caption("YOUR FIELD")
+        st.markdown(f"**{place}**")
+        st.caption(f"{lat:.2f}°N, {lon:.2f}°E · April–September · {recent[0]}–{recent[1]}")
+    with settings:
+        st.caption("SCENARIO")
+        st.markdown(f"**{soil.name}** · {'Irrigated' if irrigated else 'Rainfed'}")
+        st.caption(f"Priority: {preset} · Outlook: {FUTURE_YEAR}")
 
 # ---------- headline ----------
 with st.container(border=True):
@@ -164,6 +249,8 @@ with st.container(border=True):
         t, p = shift["season_temp"], shift["season_precip"]
         st.caption(f"April–September average: {t['past']:.1f} → {t['recent']:.1f} °C, "
                    f"{p['past']:.0f} → {p['recent']:.0f} mm of rain.")
+        st.button("Compare rotations", type="primary", icon=":material/arrow_forward:",
+                  on_click=open_tab, args=("rotation",))
     with right:
         st.caption(f"BEST ROTATION FOR “{preset.upper()}”")
         if best:
@@ -172,10 +259,19 @@ with st.container(border=True):
                         "for what you grow now.")
         else:
             st.markdown("No rotation passes the agronomy rules for this field.")
+        st.download_button(
+            "Download field summary", field_summary(
+                place, lat, lon, soil, irrigated, preset, weights, shift,
+                baseline, best, FUTURE_YEAR, CRITERIA_LABELS),
+            f"fieldshift_{lat:.2f}_{lon:.2f}_summary.md", "text/markdown",
+            icon=":material/download:", on_click="ignore",
+        )
 
 requested = st.query_params.get("tab")
+if "active_view" not in st.session_state:
+    st.session_state["active_view"] = TABS.get(requested, TABS["climate"])
 tab_climate, tab_crops, tab_rotation, tab_method = st.tabs(
-    list(TABS.values()), default=TABS[requested] if requested in TABS else None)
+    list(TABS.values()), key="active_view", on_change=sync_tab)
 
 # ---------- 1. climate shift ----------
 with tab_climate:
