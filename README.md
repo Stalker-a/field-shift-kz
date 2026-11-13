@@ -5,7 +5,12 @@ NASA Space Apps Challenge 2026: *Field Shift: Adapting Farms with NASA Data*. Te
 
 **Live demo:** https://stalker-a-field-shift-kz-app-xokyoc.streamlit.app/
 
-The farmer picks a region or coordinates, a soil type, a priority and the rotation they grow now. The app answers in four tabs:
+The farmer picks a demo region, enters coordinates or chooses a point on the map,
+then sets a soil type, a priority and the rotation they grow now. Map clicks are
+previewed before applying them; manual coordinates are submitted together.
+The selected field and scenario stay visible above the results, and a downloadable
+field summary includes the current rotation, suggested options and explanations.
+The app answers in four tabs:
 
 1. **Climate shift.** The field in 2006–2025 against 1981–2000: growing-season temperature, rainfall, root-zone soil wetness, water deficit, frost-free season, last spring frost, hot days and the longest dry spell. Year-by-year and month-by-month charts show where the change comes from.
 2. **Crop fit.** How well 16 crops fit the field now and in 2035, and which factor holds each one back: temperature, water, season length or soil salinity. The 2035 climate extends the observed trend; it is not a climate model.
@@ -21,7 +26,14 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+Use Python 3.11 with the pinned dependencies in `requirements.txt`.
+
 Check on real data: `python tests/check_regions.py`
+
+Check UI state, map input validation and exports: `python tests/check_ui.py`
+
+For deployment and browser verification, see [DEPLOYMENT.md](DEPLOYMENT.md).
+Production follows `main`; feature branches are reviewed through pull requests.
 
 ## Data
 
@@ -42,4 +54,5 @@ Check on real data: `python tests/check_regions.py`
 | `fieldshift/charts.py` | Plotly figures and the color palette |
 | `fieldshift/regions.py` | preset farming regions |
 | `app.py` | Streamlit UI |
+| `ui_helpers.py` | map input validation, map view and field summary export |
 | `.streamlit/config.toml` | dark theme |
