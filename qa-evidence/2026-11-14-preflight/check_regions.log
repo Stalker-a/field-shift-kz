@@ -1,0 +1,94 @@
+
+=== Kostanay (north, grain belt) | Chernozem (black soil) | irrigated=False | years 1981-2025
+  annual_temp: 3.22 -> 3.27 (trend +0.04/decade)
+  annual_precip: 356.58 -> 398.98 (trend +17.12/decade)
+  season_temp: 15.43 -> 15.47 (trend -0.00/decade)
+  season_precip: 212.48 -> 239.31 (trend +11.50/decade)
+  season_wetness: 0.60 -> 0.62 (trend +0.01/decade)
+  season_et0: 717.75 -> 707.23 (trend -4.84/decade)
+  water_deficit: 505.27 -> 467.91 (trend -16.34/decade)
+  frost_free_days: 139.40 -> 141.45 (trend +1.19/decade)
+  last_frost_doy: 130.85 -> 129.10 (trend -0.85/decade)
+  hot_days: 26.40 -> 23.80 (trend -1.20/decade)
+  max_dry_spell: 22.00 -> 19.30 (trend -0.99/decade)
+  best crops: flax 1.00, chickpea 1.00, lentil 1.00, buckwheat 1.00, fallow 1.00, peas 0.98
+  baseline total 0.53 {'soil': 0.08, 'water': 0.64, 'profit': 0.52, 'resilience': 0.87}
+  flax > chickpea > buckwheat > lentil: total 0.83 {'soil': 0.79, 'water': 0.68, 'profit': 0.86, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - Every crop fits within the ~338 mm of water available in the season.
+     - Stays 100% suitable under the 2035 trend climate.
+  chickpea > buckwheat > lentil > rapeseed: total 0.83 {'soil': 0.8, 'water': 0.66, 'profit': 0.86, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - Water risk: Rapeseed (canola) needs more than the ~338 mm available.
+     - Stays 100% suitable under the 2035 trend climate.
+  flax > chickpea > rapeseed > lentil: total 0.82 {'soil': 0.69, 'water': 0.66, 'profit': 0.92, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - Water risk: Rapeseed (canola) needs more than the ~338 mm available.
+     - Stays 100% suitable under the 2035 trend climate.
+
+=== Turkestan (Shymkent) | Sierozem (grey desert soil) | irrigated=True | years 1981-2025
+  annual_temp: 13.66 -> 13.97 (trend +0.12/decade)
+  annual_precip: 353.44 -> 489.10 (trend +53.43/decade)
+  season_temp: 23.10 -> 23.62 (trend +0.17/decade)
+  season_precip: 116.97 -> 127.59 (trend +6.47/decade)
+  season_wetness: 0.51 -> 0.54 (trend +0.01/decade)
+  season_et0: 1012.48 -> 1013.45 (trend +0.10/decade)
+  water_deficit: 895.51 -> 885.86 (trend -6.37/decade)
+  frost_free_days: 200.25 -> 213.45 (trend +3.32/decade)
+  last_frost_doy: 95.95 -> 89.10 (trend -1.95/decade)
+  hot_days: 110.35 -> 110.35 (trend -0.19/decade)
+  max_dry_spell: 62.45 -> 60.10 (trend -2.28/decade)
+  best crops: millet 1.00, maize 1.00, sunflower 1.00, chickpea 1.00, soybean 1.00, fallow 1.00
+  baseline total 0.42 {'soil': 0.08, 'water': 0.79, 'profit': 0.29, 'resilience': 0.51}
+  maize > chickpea > sunflower > soybean: total 0.79 {'soil': 0.69, 'water': 0.71, 'profit': 0.78, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - Every crop fits within the ~621 mm of water available in the season.
+     - Stays 100% suitable under the 2035 trend climate.
+  millet > chickpea > maize > soybean: total 0.79 {'soil': 0.73, 'water': 0.77, 'profit': 0.68, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - Every crop fits within the ~621 mm of water available in the season.
+     - Stays 100% suitable under the 2035 trend climate.
+  millet > chickpea > sunflower > soybean: total 0.79 {'soil': 0.72, 'water': 0.75, 'profit': 0.69, 'resilience': 1.0}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - Every crop fits within the ~621 mm of water available in the season.
+     - Stays 100% suitable under the 2035 trend climate.
+
+=== Kyzylorda (Aral Sea basin) | Saline soil | irrigated=True | years 1981-2025
+  annual_temp: 10.38 -> 10.82 (trend +0.22/decade)
+  annual_precip: 137.67 -> 130.56 (trend -4.43/decade)
+  season_temp: 22.15 -> 22.77 (trend +0.26/decade)
+  season_precip: 51.66 -> 43.22 (trend -3.68/decade)
+  season_wetness: 0.50 -> 0.50 (trend -0.00/decade)
+  season_et0: 973.52 -> 986.48 (trend +4.22/decade)
+  water_deficit: 921.86 -> 943.26 (trend +7.90/decade)
+  frost_free_days: 176.65 -> 189.60 (trend +3.74/decade)
+  last_frost_doy: 107.85 -> 100.85 (trend -2.26/decade)
+  hot_days: 95.75 -> 100.95 (trend +1.61/decade)
+  max_dry_spell: 66.90 -> 70.75 (trend +1.35/decade)
+  best crops: fallow 1.00, millet 0.70, cotton 0.67, sunflower 0.66, chickpea 0.64, alfalfa 0.60
+  baseline total 0.39 {'soil': 0.08, 'water': 0.75, 'profit': 0.26, 'resilience': 0.48}
+  millet > fallow > chickpea > sunflower: total 0.63 {'soil': 0.73, 'water': 0.8, 'profit': 0.33, 'resilience': 0.66}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - A green fallow year (green manure) stores moisture and organic matter for the next crop.
+     - Water risk: Sunflower needs more than the ~528 mm available.
+     - Stays 66% suitable under the 2035 trend climate.
+  millet > fallow > cotton > chickpea: total 0.63 {'soil': 0.73, 'water': 0.78, 'profit': 0.34, 'resilience': 0.67}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - A green fallow year (green manure) stores moisture and organic matter for the next crop.
+     - Water risk: Cotton needs more than the ~528 mm available.
+     - Stays 67% suitable under the 2035 trend climate.
+  millet > fallow > chickpea > maize: total 0.62 {'soil': 0.74, 'water': 0.81, 'profit': 0.3, 'resilience': 0.64}
+     - Chickpea fixes nitrogen from the air and feeds the next crop.
+     - 3 different crop families break pest and disease cycles.
+     - A green fallow year (green manure) stores moisture and organic matter for the next crop.
+     - Every crop fits within the ~528 mm of water available in the season.
+     - Stays 64% suitable under the 2035 trend climate.
+
+OK
