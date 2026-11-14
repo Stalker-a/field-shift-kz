@@ -1,0 +1,58 @@
+{
+  "01-kostanay-chernozem-rainfed-balanced.jpg": {
+    "bytes": 90118,
+    "sha256": "fcb5f20699c6be3ca877569aef43435b5938c0f05948965f2ad4b55e2a98f24e"
+  },
+  "02-shymkent-sierozem-irrigated-balanced.jpg": {
+    "bytes": 95535,
+    "sha256": "4d99eedfa7c3e95dd43757fc5dcaf3ed14bff2f0a9f29ef9f5cf984bf1a15af7"
+  },
+  "03-kyzylorda-saline-irrigated-rice-before-merge.jpg": {
+    "bytes": 110554,
+    "sha256": "4305044ede93b3123582865c7b83eff3f82c4c72f5397aedc143a9524aa39545"
+  },
+  "04-map-outside-supported-area.jpg": {
+    "bytes": 113215,
+    "sha256": "130b934a045187162b9aa0a8c7ab426c8478aa9d975599f7116f4c35569ef9d2"
+  },
+  "05-map-valid-preview-before-apply.jpg": {
+    "bytes": 76994,
+    "sha256": "b4132b24ea01d28f59ac4056c1c7534505ab66e01ce84b93d4a5a2ab68440360"
+  },
+  "06-new-point-44.86-63.13-saline-irrigated.jpg": {
+    "bytes": 92414,
+    "sha256": "11bc2e96779e7c8e8b6ba74fc52dfa15ac8afea0fb4a1d7b60e84c952047604d"
+  },
+  "07-manual-coordinate-range-validation.jpg": {
+    "bytes": 87266,
+    "sha256": "bf1d782a8981e33626ec12134eb79f6b8aac38b88b963a02cc94daf76bb723cd"
+  },
+  "08-mobile-390-kyzylorda-saline-irrigated-map.jpg": {
+    "bytes": 43045,
+    "sha256": "1006026bcdf50a4b2a2783e4d355b879ae6875d2a56cf5660731cf95aaca7e5d"
+  },
+  "09-mobile-390-map-preview.jpg": {
+    "bytes": 45010,
+    "sha256": "6257e0057e5aac2d3ffd2b124caa0ab154d605cb03c344eabf94fbe1fdc82c9a"
+  },
+  "10-mobile-390-navigation-method.jpg": {
+    "bytes": 39568,
+    "sha256": "2ff6fb004939f976dd78725fc4e9697ede6a2563d33cbd5b27ac46c313de03ea"
+  },
+  "check_regions.log": {
+    "bytes": 6224,
+    "sha256": "efea731a815db4e345c9e804d15f219d61722e5bf54549d1acaa4d9e1d713b70"
+  },
+  "check_ui.log": {
+    "bytes": 2066,
+    "sha256": "07b2d536c049392741cb0105bc50f4c3fdefa32e840cea8df786f17b69091b82"
+  },
+  "fieldshift-summary-new-point-44.86-63.13.md": {
+    "bytes": 2679,
+    "sha256": "5ef34d264b7aec10cd1390b60b4d946ba805bd6d0755cde3f67acfad0505306b"
+  },
+  "README.md": {
+    "bytes": 17627,
+    "sha256": "414171019e7a0563a886a1ba6147e376b3e901285519c4481989c8ba4f750079"
+  }
+}

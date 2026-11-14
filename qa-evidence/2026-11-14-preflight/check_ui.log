@@ -1,0 +1,19 @@
+test_custom_data_failure_has_working_demo_recovery (__main__.InterfaceTests.test_custom_data_failure_has_working_demo_recovery) ... 2026-11-14 12:35:03.422 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-14 12:35:03.422 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-11-14 12:35:03.423 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_manual_coordinates_apply_together (__main__.InterfaceTests.test_manual_coordinates_apply_together) ... 2026-11-14 12:35:06.927 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_map_preview_does_not_change_field_until_applied (__main__.InterfaceTests.test_map_preview_does_not_change_field_until_applied) ... 2026-11-14 12:35:08.553 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_outside_map_point_cannot_be_applied (__main__.InterfaceTests.test_outside_map_point_cannot_be_applied) ... 2026-11-14 12:35:10.785 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_rotation_navigation_survives_settings_change (__main__.InterfaceTests.test_rotation_navigation_survives_settings_change) ... 2026-11-14 12:35:11.900 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_summary_retains_scenario_and_handles_no_options (__main__.InterfaceTests.test_summary_retains_scenario_and_handles_no_options) ... ok
+test_invalid_component_values_are_rejected (__main__.MapInputTests.test_invalid_component_values_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 10.211s
+
+OK
