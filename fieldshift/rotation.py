@@ -14,7 +14,12 @@ CRITERIA = ("soil", "water", "profit", "resilience")
 
 
 def available_water(climate, soil, irrigated):
-    """Seasonal water a crop can use: rain + stored soil moisture + irrigation, mm."""
+    """Seasonal field budget: rain + assumed initial soil stock + irrigation, mm.
+
+    Each supply is credited once. Paddy SAT is a fixed preparation budget before
+    this stock credit; do not subtract stored water from SAT a second time.
+    Seasonal mean wetness is only a proxy for initial stock (see SOURCES.md).
+    """
     stored = soil.water_hold * climate["season_wetness"]
     return climate["season_precip"] + stored + (IRRIGATION_MM if irrigated else 0)
 
@@ -27,9 +32,10 @@ def temp_fit(crop, temp):
 
 
 def water_fit(crop, water):
-    if crop.water_need == 0:
+    need = crop.field_water_need
+    if need == 0:
         return 1.0
-    ratio = min(1.0, water / crop.water_need)
+    ratio = min(1.0, water / need)
     # drought-tolerant crops lose less yield when water falls short
     return ratio ** (1 - 0.7 * crop.drought_tol)
 
@@ -120,7 +126,7 @@ def score_rotation(rot, now, future, soil, irrigated, weights):
         prev = crops[i - 1]
         extra = soil.water_hold * FALLOW_CARRYOVER if prev.family == "fallow" else 0.0
         wf = water_fit(crop, water + extra)
-        use = min(1.0, crop.water_need / (water + extra)) if water + extra > 0 else 1.0
+        use = min(1.0, crop.field_water_need / (water + extra)) if water + extra > 0 else 1.0
         water_parts.append(0.6 * wf + 0.4 * (1 - use))
 
         suit = suitability(crop, now, soil, irrigated, extra)
@@ -154,12 +160,16 @@ def explain(result, now, future_year, soil, irrigated):
         reasons.append(f"{len(families)} different crop families break pest and disease cycles.")
     if any(c.family == "fallow" for c in crops):
         reasons.append("A green fallow year (green manure) stores moisture and organic matter for the next crop.")
-    thirsty = [c.name for c in crops if c.water_need > water]
+    thirsty = [c.name for c in crops if c.field_water_need > water]
     if thirsty:
         verb = "needs" if len(thirsty) == 1 else "need"
         reasons.append(f"Water risk: {', '.join(thirsty)} {verb} more than the ~{water:.0f} mm available.")
     else:
         reasons.append(f"Every crop fits within the ~{water:.0f} mm of water available in the season.")
+    if any(c.key == "rice" for c in crops):
+        rice = CROPS["rice"]
+        reasons.append(f"Rice uses a ~{rice.field_water_need:.0f} mm paddy-water scenario, including "
+                       "soil preparation, percolation and a water layer; it is not a local irrigation norm.")
     late = [c.name for c in crops if c.season_days > frost_free]
     if late:
         verb = "needs" if len(late) == 1 else "need"
