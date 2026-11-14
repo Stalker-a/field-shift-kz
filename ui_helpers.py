@@ -84,6 +84,9 @@ def field_summary(place, lat, lon, soil, irrigated, priority, weights, shift,
               "NASA POWER daily point data: https://power.larc.nasa.gov/",
               "Grid-cell estimates describe the surrounding area, not field measurements.",
               "Crop and soil parameters are approximate prototype assumptions.",
+              "Rice water fit includes ETc, soil preparation, percolation and a water layer. "
+              "The continuous-flooding scenario is not a measured Kazakhstan irrigation norm; "
+              "see https://github.com/Stalker-a/field-shift-kz/blob/main/SOURCES.md.",
               "All scores are relative model indicators; Income is not money or a profit forecast.",
               f"The {future_year} outlook extends the observed trend; it is not a climate model projection.",
               "Review options with a local agronomist before changing a rotation.", ""]

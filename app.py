@@ -186,7 +186,8 @@ with st.sidebar:
     soil = SOILS[soil_key]
     st.caption(soil.note)
     irrigated = st.toggle("Field is irrigated",
-                          help=f"Adds about {IRRIGATION_MM} mm of water per season and allows cotton and rice.")
+                          help=f"Adds about {IRRIGATION_MM} mm at the field per season and allows cotton and rice. "
+                               "This assumed supply may still fall short of their water needs.")
 
     st.subheader("2 · Your priority")
     preset = st.radio("What matters most to you?", list(PRESETS))
@@ -369,6 +370,10 @@ with tab_crops:
     st.subheader(f"Which crops fit your field now and in {FUTURE_YEAR}")
     st.caption(f"{FUTURE_YEAR} extends today's climate along the {past[0]}–{recent[1]} trend. "
                "It is a simple extrapolation, not a climate model.")
+    rice = CROPS["rice"]
+    st.caption(f"Rice includes paddy preparation and flooding: {rice.field_water_need:.0f} mm "
+               f"total field demand, including {rice.water_need:.0f} mm crop evapotranspiration (ETc). "
+               "This is a generic continuous-flooding scenario, not a measured Kazakhstan irrigation norm.")
     left, right = st.columns([3, 2], gap="large")
     with left:
         chart(charts.suitability_dumbbell([(f["crop"], f["now"], f["future"]) for f in fits], FUTURE_YEAR))
@@ -476,6 +481,9 @@ with tab_method:
             "- **Crop fit** multiplies four factors: season temperature, water available "
             "(rain + stored soil moisture + irrigation) against the crop's need, frost-free days "
             "against the crop's season, and salt tolerance on saline soil.\n"
+            "- **Rice water** adds a one-off soil preparation budget and water layer to ETc, "
+            "plus percolation and seepage during flooding. The same total is used for crop fit "
+            "and water saving. Rain and soil water are credited once.\n"
             "- **Rotations** are every four-year sequence of the best-fitting crops that passes basic "
             "agronomy rules: no crop straight after itself, no two legumes or two oilseeds in a row.\n"
             "- **Soil health** rewards legumes, crop diversity and soil-building crops, and penalises "
@@ -491,8 +499,17 @@ with tab_method:
             "- NASA POWER describes a grid cell of about 50 km, not a single field.\n"
             "- Crop and soil parameters are approximate. Use the results to explore options, "
             "and talk to a local agronomist before changing your rotation.\n"
+            "- Rice assumes continuous flooding from sowing until 10 days before harvest: "
+            "120 flooded days, 6 mm/day percolation, 200 mm preparation and a 100 mm water layer "
+            "(FAO Manual 3 §4.4; pre-harvest drainage: TNAU). Actual losses depend on soil texture "
+            "and puddling, which the selected soil class does not specify. All rain is treated as usable; "
+            "seasonal mean wetness is only a proxy for initial soil water. See "
+            "[sources and assumptions](https://github.com/Stalker-a/field-shift-kz/blob/main/SOURCES.md).\n"
             f"- The {FUTURE_YEAR} outlook extends the observed trend. It is not a climate model projection."
         )
 
     with st.expander("Show the crop parameters used"):
-        st.dataframe(pd.DataFrame([vars(c) for c in CROPS.values()]).drop(columns="key"), hide_index=True)
+        st.caption("Water depths are mm; water_need is crop ETc, field_water_need includes paddy costs. "
+                   "percolation_mm_day is mm/day; flooded_days is days. Zero paddy costs for other crops.")
+        st.dataframe(pd.DataFrame([{**vars(c), "field_water_need": c.field_water_need}
+                                   for c in CROPS.values()]).drop(columns="key"), hide_index=True)
