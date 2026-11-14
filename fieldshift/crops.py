@@ -2,7 +2,8 @@
 
 Prototype parameters, with evidence and unresolved limits in ../SOURCES.md.
 Selected water needs are nominal seasonal crop evapotranspiration (ETc), not
-irrigation application depths or minimum water needed to survive. Temperature
+irrigation application depths or minimum water needed to survive. Rice's
+field_water_need also includes paddy preparation and flooding. Temperature
 bounds and relative scores remain uncalibrated prototype assumptions.
 """
 from dataclasses import dataclass
@@ -22,6 +23,16 @@ class Crop:
     salt_tol: float = 0.3  # heuristic 0..1, not a measured salinity threshold
     season_days: int = 0  # frost-free days needed from sowing to harvest; 0 = no limit
     irrigated_only: bool = False
+    saturation_mm: float = 0.0  # one-off paddy preparation budget, before soil-water credit
+    percolation_mm_day: float = 0.0  # percolation + seepage while flooded
+    flooded_days: int = 0       # distinct from the sowing-to-harvest season_days
+    water_layer_mm: float = 0.0  # establish once; maintenance is in percolation
+
+    @property
+    def field_water_need(self):
+        """Seasonal field demand before rain/soil/irrigation credits, mm."""
+        return (self.water_need + self.saturation_mm
+                + self.percolation_mm_day * self.flooded_days + self.water_layer_mm)
 
 
 # Six revised water needs use the lower end of FAO Manual 3, Table 14;
@@ -44,7 +55,12 @@ CROPS = {c.key: c for c in [
     Crop("buckwheat", "Buckwheat", "pseudocereal", 13, 20, 300, 0.4, 0.60, 0.50, 0.3, season_days=80),
     Crop("alfalfa", "Alfalfa", "legume", 13, 27, 800, 0.6, 0.95, 0.50, 0.6),
     Crop("cotton", "Cotton", "row", 21, 30, 700, 0.4, 0.10, 0.80, 0.7, season_days=160, irrigated_only=True),
-    Crop("rice", "Rice", "cereal", 21, 30, 700, 0.0, 0.20, 0.70, 0.6, season_days=130, irrigated_only=True),
+    # FAO Manual 3 §4.4 scenario, not a Kazakhstan irrigation norm. Continuous
+    # flooding from sowing until drainage 10 days before harvest (TNAU): 130-10.
+    # Soil classes do not identify texture/puddling, so use FAO's mean 6 mm/day.
+    Crop("rice", "Rice", "cereal", 21, 30, 700, 0.0, 0.20, 0.70, 0.6,
+         season_days=130, irrigated_only=True, saturation_mm=200,
+         percolation_mm_day=6, flooded_days=120, water_layer_mm=100),
     Crop("fallow", "Green fallow", "fallow", -50, 50, 0, 1.0, 0.80, 0.00, 1.0),
 ]}
 
@@ -82,4 +98,4 @@ SOILS = {s.key: s for s in [
          "Salt holds back most crops. Common on old irrigated land.", saline=True),
 ]}
 
-IRRIGATION_MM = 450  # assumed net seasonal water available to plants, not gross delivery
+IRRIGATION_MM = 450  # assumed seasonal field water input; excludes upstream delivery losses

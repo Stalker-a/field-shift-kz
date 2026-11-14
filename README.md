@@ -32,6 +32,8 @@ Check on real data: `python tests/check_regions.py`
 
 Check UI state, map input validation and exports: `python tests/check_ui.py`
 
+Check the rice paddy water balance: `python tests/check_rice_water.py`
+
 For deployment and browser verification, see [DEPLOYMENT.md](DEPLOYMENT.md).
 Production follows `main`; feature branches are reviewed through pull requests.
 
@@ -41,6 +43,12 @@ Production follows `main`; feature branches are reviewed through pull requests.
 - Reference evapotranspiration is computed from the daily temperatures with the Hargreaves method (FAO-56).
 - The derived monthly and yearly tables are cached in `.cache/`. The twelve preset regions ship with the repository, so the demo works offline.
 - Crop and soil parameters in `fieldshift/crops.py` are approximate prototype values.
+- Rice retains `water_need = 700` mm of seasonal crop evapotranspiration (ETc).
+  Its full field demand is `700 + 200 + 6 × 120 + 100 = 1720` mm, including
+  preparation, percolation/seepage and a water layer. Crop fit and rotation
+  scoring use this total. The FAO-based continuous-flooding scenario is not a
+  measured Kazakhstan irrigation norm; see [SOURCES.md](SOURCES.md) for its
+  calendar, water accounting, regional before/after results and limitations.
 
 ## Code
 
