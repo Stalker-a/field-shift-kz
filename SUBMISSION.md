@@ -163,14 +163,14 @@ Field Shift KZ helps farmers in Kazakhstan explore crop rotations as growing con
 
 ### Link to Project Demo
 
-**НЕ ЗАПОЛНЕНО.** В issue #5 нет опубликованной ссылки автора на слайды или
-видео. Вставить одну актуальную публичную ссылку от @Anayatqwp на ≤30 секунд
-видео **или** ≤7 слайдов. Проверить весь материал, длительность/число слайдов,
-английский язык/субтитры, права и SI-маркировки. Пропуск не отправлять в форму.
+Основное демо — презентация из PR #7: 6 слайдов на английском, PDF в `main`.
+Запасной вариант — видео на 27 секунд с английскими субтитрами:
+https://github.com/Stalker-a/field-shift-kz/blob/main/Field_Shift_KZ_demo_30s.mp4
+В поле формы вставляется только одна ссылка.
 
 <!-- field:demo -->
 ```text
-TO BE FILLED: one publicly accessible URL to the final video (30 seconds maximum) OR slide deck (seven slides maximum, including title and introduction).
+https://github.com/Stalker-a/field-shift-kz/blob/main/Field_Shift_KZ.pdf
 ```
 <!-- /field -->
 
@@ -192,9 +192,9 @@ A farmer selects one of 12 demo regions, enters coordinates, or previews a point
 
 The crop view scores 16 crops using temperature, available water, frost-free days and a heuristic salinity factor. Rotation search filters four-year sequences through crop-family and repetition rules. It offers three distinct options when suitable options exist, scores them for soil health, water saving, relative income and resilience, and compares them with the farmer's current rotation. The default reference is wheat, wheat, wheat and green fallow. Explanations and a downloadable field summary keep the selected location, soil, irrigation and priorities attached to the result.
 
-NASA POWER supplies the environmental inputs. FAO references and Kazakhstani agronomic publications inform the crop-parameter audit, with unsupported values and mismatched definitions explicitly recorded. Soil storage, irrigation amounts and several crop ratings remain prototype assumptions. The present public version uses nominal crop evapotranspiration for rice and does not yet account for the complete flooded-paddy water requirement, so rice water-fit results need particular caution.
+NASA POWER supplies the environmental inputs. FAO references and Kazakhstani agronomic publications inform the crop-parameter audit, with unsupported values and mismatched definitions explicitly recorded. Soil storage, irrigation amounts and several crop ratings remain prototype assumptions. Rice is scored against its full flooded-paddy water demand of about 1,720 mm per season (crop evapotranspiration plus soil preparation, percolation and a water layer), based on an FAO scenario rather than a measured Kazakhstan irrigation norm.
 
-The implementation uses Python, Streamlit, pandas, NumPy, Plotly, Requests, Folium and streamlit-folium. OpenStreetMap provides the basemap. Derived monthly and yearly tables for the 12 demo points are included in the repository, allowing those analyses without a new NASA download. First-time custom points need NASA access, and map tiles need an internet connection. The app is hosted on Streamlit Community Cloud. OpenAI Codex assisted code, tests, source review and documentation; the app itself uses deterministic calculations rather than LLM inference.
+The implementation uses Python, Streamlit, pandas, NumPy, Plotly, Requests, Folium and streamlit-folium. OpenStreetMap provides the basemap. Derived monthly and yearly tables for the 12 demo points are included in the repository, allowing those analyses without a new NASA download. First-time custom points need NASA access, and map tiles need an internet connection. The app is hosted on Streamlit Community Cloud. AI coding assistants (Claude Code and OpenAI Codex) helped write the code, tests and documentation, as described in the Use of SI section; the app itself uses deterministic calculations rather than LLM inference.
 
 The intended benefit is a clearer, reproducible conversation about climate adaptation and crop choices. Scores are relative model indicators, not proven yield, monetary profit, measured water savings or validated soil improvements. Gridded NASA data do not measure an individual field; seasonal aggregation and approximate agronomy limit interpretation. Local soil measurements, crop calendars and agronomist-led validation are needed before farm decisions. Future work includes better field-specific inputs and evaluation with local users. These are development goals, not completed features.
 ```
@@ -202,14 +202,12 @@ The intended benefit is a clearer, reproducible conversation about climate adapt
 
 ### Use of Super Intelligence (SI)
 
-Это **подтверждённая часть раскрытия**, не утверждение о полном перечне всей
-команды. Другие инструменты, использование SI при выборе идеи, слайдах, изображениях,
-голосе и видео запрошены в [issue #4][D1] и [issue #5][M1]. Перед вставкой владелец
-должен дополнить этот блок фактическими сведениями. Не писать «AI was not used».
+Полное раскрытие всей команды, подтверждено лидером 15.11. Использование ИИ
+участником 3 для слайдов и видео — по его комментарию в PR #7.
 
 <!-- field:si -->
 ```text
-OpenAI Codex was used as a coding and writing assistant for interface implementation, tests, agronomic-source review and documentation, including this submission draft. It generated or revised code and prose. AI-assisted changes are recorded in the repository and pull requests, and automated checks have been run. NASA POWER values are retrieved from the public API rather than generated by AI. The running application uses deterministic calculations and does not call an LLM. This statement covers the verified coding-assistant work; the team must complete the record of any additional SI tools or generated media before submission.
+We used AI assistants as coding and writing tools; the team reviewed all results and checked them with automated tests. Claude (Anthropic), through Claude Code, wrote most of the application code with the team lead: the NASA POWER data pipeline, the climate indicators, the crop-fit and rotation scoring, the Streamlit interface and charts, tests and documentation. It also helped draft, translate and assemble the slides and the demo video, and find sources for the Kazakhstan facts. OpenAI Codex helped another team member with the map interface, tests, the review of agronomic sources and the submission text. The demo narration is a synthetic voice (Microsoft Windows text-to-speech) and is labelled in the video. No AI-generated images are used. The running app does not call any AI model: all values come from the NASA POWER API and deterministic calculations.
 ```
 <!-- /field -->
 
@@ -272,16 +270,16 @@ WYSIWYG/HTML-разметка редактора может считаться �
 |---|---:|---:|---|
 | Project Name | 14 | 3 | Числовой лимит формы не подтверждён |
 | High-Level Project Summary | 684 | 101 | Числовой лимит формы не подтверждён |
-| Link to Project Demo (пропуск) | 153 | 24 | Материал отсутствует; размер пропуска не подтверждает соблюдение 30 секунд/7 слайдов |
+| Link to Project Demo | 72 | 1 | PDF: 6 слайдов (лимит 7); запасное видео 27 с (лимит 30) |
 | Link to Final Project | 58 | 1 | Числовой лимит формы не подтверждён |
-| Detailed Project Description | 3102 | 431 | Числовой лимит формы не подтверждён |
-| Use of Super Intelligence (SI), подтверждённая часть | 634 | 94 | Числовой лимит формы не подтверждён |
+| Detailed Project Description | 3218 | 454 | Числовой лимит формы не подтверждён |
+| Use of Super Intelligence (SI) | 866 | 137 | Числовой лимит формы не подтверждён |
 | NASA Data | 1547 | 198 | Числовой лимит формы не подтверждён |
 | Space Agency Partner Data and Other References | 2725 | 302 | Числовой лимит формы не подтверждён |
 <!-- counts:end -->
 
 Для Demo ограничение относится к самому медиаматериалу, не к длине URL.
-Длительность видео/количество слайдов пока не проверены: ссылок нет.
+Проверено 15.11: в PDF и PPTX 6 слайдов, видео длится 27,2 секунды.
 
 ## Доступность ссылок и проверка состояния
 
